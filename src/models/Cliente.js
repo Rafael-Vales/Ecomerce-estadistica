@@ -7,6 +7,8 @@ const Cliente=db.define("cliente",{
   email:DataTypes.STRING,
   ciudad: DataTypes.STRING,
   edad: DataTypes.INTEGER
+}, {
+  timestamps: false
 });
 
-module.exports=Cliente
+module.exports=Cliente;

@@ -8,6 +8,7 @@ const Venta = db.define("venta", {
   cantidad: DataTypes.INTEGER,
   metodo_pago: DataTypes.STRING,
   total: DataTypes.DECIMAL
+}, {
 });
 
 Cliente.hasMany(Venta);

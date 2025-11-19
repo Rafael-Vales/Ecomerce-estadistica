@@ -8,8 +8,72 @@
 	</head>
 	<body>
 		<h1>TRABAJO PRACTICO - ESTADISTICA</h1>
+		<nav class="menu">
+			<button id="menuCliente">Cargar Cliente</button>
+			<button id="menuProducto">Cargar Producto</button>
+			<button id="menuVenta">Cargar Venta</button>
+		</nav>
 
-		<section class="card">
+		<section id="formCliente" class="card" style="display: none">
+			<h2>Cargar Cliente</h2>
+			<form id="clienteForm">
+				<input
+					type="text"
+					id="clienteNombre"
+					placeholder="Nombre"
+					required />
+				<input
+					type="text"
+					id="clienteApellido"
+					placeholder="Apellido"
+					required />
+				<input
+					type="email"
+					id="clienteEmail"
+					placeholder="Email"
+					required />
+				<input
+					type="text"
+					id="clienteCiudad"
+					placeholder="Ciudad"
+					required />
+				<input
+					type="number"
+					id="clienteEdad"
+					placeholder="Edad"
+					required />
+				<button type="submit">Registrar Cliente</button>
+			</form>
+		</section>
+
+		<section id="formProducto" class="card" style="display: none">
+			<h2>Cargar Producto</h2>
+			<form id="productoForm">
+				<input
+					type="text"
+					id="productoNombre"
+					placeholder="Nombre"
+					required />
+				<input
+					type="text"
+					id="productoCategoria"
+					placeholder="Categoría"
+					required />
+				<input
+					type="number"
+					id="productoPrecio"
+					placeholder="Precio Unitario"
+					required />
+				<input
+					type="number"
+					id="productoStock"
+					placeholder="Stock"
+					required />
+				<button type="submit">Registrar Producto</button>
+			</form>
+		</section>
+
+		<section id="formVenta" class="card" style="display: none">
 			<h2>Cargar una nueva venta</h2>
 			<form id="ventaForm">
 				<input type="date" id="fecha" required />
@@ -34,6 +98,7 @@
 					id="clienteId"
 					placeholder="ID Cliente"
 					required />
+
 				<input
 					type="number"
 					id="productoId"
@@ -42,8 +107,6 @@
 				<button type="submit">Registrar Venta</button>
 			</form>
 		</section>
-
-		<button id="cargarDatos">Mostrar Dashboard</button>
 
 		<section class="dashboard">
 			<div class="chart-container">
@@ -63,5 +126,28 @@
 		</section>
 
 		<script src="main.js"></script>
+		<script>
+			document.getElementById("formVenta").style.display = "none";
+			document.getElementById("formCliente").style.display = "none";
+			document.getElementById("formProducto").style.display = "none";
+
+			document.getElementById("menuCliente").onclick = () => {
+				document.getElementById("formCliente").style.display = "block";
+				document.getElementById("formProducto").style.display = "none";
+				document.getElementById("formVenta").style.display = "none";
+			};
+
+			document.getElementById("menuProducto").onclick = () => {
+				document.getElementById("formCliente").style.display = "none";
+				document.getElementById("formProducto").style.display = "block";
+				document.getElementById("formVenta").style.display = "none";
+			};
+
+			document.getElementById("menuVenta").onclick = () => {
+				document.getElementById("formCliente").style.display = "none";
+				document.getElementById("formProducto").style.display = "none";
+				document.getElementById("formVenta").style.display = "block";
+			};
+		</script>
 	</body>
 </html>

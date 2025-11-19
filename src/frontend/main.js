@@ -1,8 +1,15 @@
 const API_URL = "http://localhost:3000";
 
-// -------------------------------------
-// Registrar una venta
-// -------------------------------------
+let chartPromedios = null; // para destruir gráficos previos
+
+function formatNumber(num) {
+  return num.toLocaleString("es-AR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+// ---------------- REGISTRAR VENTA ----------------
 document.getElementById("ventaForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -10,7 +17,7 @@ document.getElementById("ventaForm").addEventListener("submit", async (e) => {
     fecha: document.getElementById("fecha").value,
     cantidad: Number(document.getElementById("cantidad").value),
     metodo_pago: document.getElementById("metodo_pago").value,
-    total: Number(document.getElementById("total").value),
+    total: Number(document.getElementById("total").value), // AHORA EXISTE EN HTML
     clienteId: Number(document.getElementById("clienteId").value),
     productoId: Number(document.getElementById("productoId").value)
   };
@@ -24,45 +31,95 @@ document.getElementById("ventaForm").addEventListener("submit", async (e) => {
   const data = await res.json();
   alert("Venta registrada con éxito");
   console.log("Venta:", data);
+
+  loadDashboard();
 });
 
-// -------------------------------------
-// Mostrar Dashboard
-// -------------------------------------
-document.getElementById("cargarDatos").addEventListener("click", async () => {
+// ---------------- DASHBOARD ----------------
+async function loadDashboard() {
 
-  // 1) Traer promedios
+  // 1) Promedios
   const promRes = await fetch(`${API_URL}/estadisticas/promedios`);
   const promedios = await promRes.json();
 
-  // Gráfico Promedio por día
-  const labels = promedios.promediosPorDia.map(x => x.dia);
+  if (!promedios.promediosPorDia) return;
+
+  const labels = promedios.promediosPorDia.map(x => String(x.dia));
   const valores = promedios.promediosPorDia.map(x => x.promedio);
 
-  new Chart(document.getElementById("chartPromediosDia"), {
-    type: "line",
+  // Destruir gráfico anterior
+  if (chartPromedios) chartPromedios.destroy();
+
+  chartPromedios = new Chart(document.getElementById("chartPromediosDia"), {
+    type: "bar",
     data: {
       labels: labels,
-      datasets: [{
-        label: "Promedio diario",
-        data: valores,
-        borderColor: "blue"
-      }]
-    }
+      datasets: [
+        {
+          label: "Promedio diario",
+          data: valores,
+          backgroundColor: "rgba(54, 162, 235, 0.6)",
+          borderColor: "rgba(54, 162, 235, 1)",
+          borderWidth: 2,
+          borderRadius: 8,
+        }
+      ]
+    },
+    options: { responsive: true }
   });
 
-  
+  // 2) Desvío
   const desvRes = await fetch(`${API_URL}/estadisticas/desvio`);
   const desvio = await desvRes.json();
-
   document.getElementById("desvioTexto").innerText =
-    `El desvío estándar del total vendido es: ${desvio.desvio.toFixed(2)}`;
+    `El desvío estándar del total vendido es: ${formatNumber(desvio.desvio)}`;
 
   // 3) Correlación
   const corrRes = await fetch(`${API_URL}/estadisticas/correlacion`);
   const correlacion = await corrRes.json();
-
   document.getElementById("correlacionTexto").innerText =
-    `Correlación Precio ↔ Cantidad: ${correlacion.correlacionPrecioCantidad.toFixed(3)}`;
+    `Correlación Precio ↔ Cantidad: ${formatNumber(correlacion.correlacionPrecioCantidad)}`;
+}
 
+window.addEventListener("DOMContentLoaded", loadDashboard);
+
+// ---------------- REGISTRAR CLIENTE ----------------
+document.getElementById("clienteForm")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const cliente = {
+    nombre: document.getElementById("clienteNombre").value,
+    apellido: document.getElementById("clienteApellido").value,
+    email: document.getElementById("clienteEmail").value,
+    ciudad: document.getElementById("clienteCiudad").value,
+    edad: Number(document.getElementById("clienteEdad").value),
+  };
+
+  const res = await fetch(`${API_URL}/clientes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(cliente),
+  });
+
+  alert("Cliente registrado con éxito");
+});
+
+// ---------------- REGISTRAR PRODUCTO ----------------
+document.getElementById("productoForm")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const producto = {
+    nombre: document.getElementById("productoNombre").value,
+    categoria: document.getElementById("productoCategoria").value,
+    precio_unitario: Number(document.getElementById("productoPrecio").value),
+    stock: Number(document.getElementById("productoStock").value),
+  };
+
+  const res = await fetch(`${API_URL}/productos`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(producto)
+  });
+
+  alert("Producto registrado con éxito");
 });

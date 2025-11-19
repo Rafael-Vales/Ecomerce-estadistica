@@ -1,63 +1,69 @@
 const express = require("express");
 const router = express.Router();
+
 const Venta = require("../models/Venta");
 const Cliente = require("../models/Cliente");
 const Producto = require("../models/Producto");
 
+
+
+//   PROMEDIOS
+
+
 router.get("/promedios", async (req, res) => {
   try {
-    
     const ventas = await Venta.findAll();
 
     const ventasPorDia = {};
 
     ventas.forEach(v => {
-        const dia = v.fecha.toISOString().slice(0, 10);
-        if (!ventasPorDia[dia]) ventasPorDia[dia] = [];
-        ventasPorDia[dia].push(v.total);
+      const dia = v.fecha; 
+      if (!ventasPorDia[dia]) ventasPorDia[dia] = [];
+      ventasPorDia[dia].push(Number(v.total));
     });
 
     const promediosPorDia = Object.entries(ventasPorDia).map(([dia, totales]) => ({
-        dia,
-        promedio: totales.reduce((a, b) => a + Number(b), 0) / totales.length
+      dia,
+      promedio: totales.reduce((a, b) => a + b, 0) / totales.length
     }));
 
-
-    const productos = await Producto.findAll({ include: Venta });
+    // Promedio por producto
+    const productos = await Producto.findAll({
+      include: [{ model: Venta }]
+    });
 
     const promediosPorProducto = productos.map(p => ({
-        producto: p.nombre,
-        promedio: p.ventas.length
+      producto: p.nombre,
+      promedio: Array.isArray(p.ventas) && p.ventas.length > 0
         ? p.ventas.reduce((acc, v) => acc + Number(v.total), 0) / p.ventas.length
         : 0
     }));
 
-    
-    const clientes = await Cliente.findAll({ include: Venta });
+    // Promedio por cliente
+    const clientes = await Cliente.findAll({
+      include: [{ model: Venta }]
+    });
 
     const promediosPorCliente = clientes.map(c => ({
-        cliente: c.nombre + " " + c.apellido,
-        promedio: c.ventas.length
+      cliente: `${c.nombre} ${c.apellido}`,
+      promedio: Array.isArray(c.ventas) && c.ventas.length > 0
         ? c.ventas.reduce((acc, v) => acc + Number(v.total), 0) / c.ventas.length
         : 0
     }));
 
-    res.json({
-        promediosPorDia,
-        promediosPorProducto,
-        promediosPorCliente
-    });
+    res.json({ promediosPorDia, promediosPorProducto, promediosPorCliente });
 
-} catch (e) {
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ error: e.message });
-}
+  }
 });
 
-function desvioEstandar(arr){
-    const media=arr.reduce((a,b)=> a+b,0)/arr.length;
-    const variancia=arr.reduce((a,b)=>a+b(b-media)**2,0)/arr.length;
-    return Math.sqrt(variancia);
-}
+
+
+
+//   DESVÍO ESTÁNDAR
+
 
 function desvioEstandar(arr) {
   const media = arr.reduce((a, b) => a + b, 0) / arr.length;
@@ -68,16 +74,20 @@ function desvioEstandar(arr) {
 router.get("/desvio", async (req, res) => {
   try {
     const ventas = await Venta.findAll();
-
     const totales = ventas.map(v => Number(v.total));
-
     const desvio = desvioEstandar(totales);
-
     res.json({ desvio });
+
   } catch (e) {
+    console.error(e);
     res.status(500).json({ error: e.message });
   }
 });
+
+
+
+
+//   CORRELACIÓN
 
 
 function correlacion(x, y) {
@@ -98,18 +108,17 @@ function correlacion(x, y) {
 
 router.get("/correlacion", async (req, res) => {
   try {
-    const ventas = await Venta.findAll({ include: Producto });
+    const ventas = await Venta.findAll({ include: [{ model: Producto }] });
 
     const precios = ventas.map(v => Number(v.producto.precio_unitario));
     const cantidades = ventas.map(v => Number(v.cantidad));
 
-    const correlacionPrecioCantidad = correlacion(precios, cantidades);
+    const coef = correlacion(precios, cantidades);
 
-    res.json({
-      correlacionPrecioCantidad
-    });
+    res.json({ correlacionPrecioCantidad: coef });
 
   } catch (e) {
+    console.error(e);
     res.status(500).json({ error: e.message });
   }
 });

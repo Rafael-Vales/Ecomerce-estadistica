@@ -6,6 +6,8 @@ const Producto = db.define("producto", {
   categoria: DataTypes.STRING,
   precio_unitario: DataTypes.INTEGER,
   stock: DataTypes.INTEGER
+}, {
+  timestamps: false
 });
 
 module.exports = Producto;
