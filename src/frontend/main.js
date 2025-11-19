@@ -1,6 +1,6 @@
 const API_URL = "http://localhost:3000";
 
-let chartPromedios = null; // para destruir gráficos previos
+let chartPromedios = null; 
 
 function formatNumber(num) {
   return num.toLocaleString("es-AR", {
@@ -35,7 +35,7 @@ document.getElementById("ventaForm").addEventListener("submit", async (e) => {
   loadDashboard();
 });
 
-// ---------------- DASHBOARD ----------------
+
 async function loadDashboard() {
 
   // 1) Promedios
@@ -47,7 +47,7 @@ async function loadDashboard() {
   const labels = promedios.promediosPorDia.map(x => String(x.dia));
   const valores = promedios.promediosPorDia.map(x => x.promedio);
 
-  // Destruir gráfico anterior
+  
   if (chartPromedios) chartPromedios.destroy();
 
   chartPromedios = new Chart(document.getElementById("chartPromediosDia"), {
@@ -62,6 +62,17 @@ async function loadDashboard() {
           borderColor: "rgba(54, 162, 235, 1)",
           borderWidth: 2,
           borderRadius: 8,
+        },
+        {
+          label: "Línea de promedio general",
+          data: valores.map(() => valores.reduce((a, b) => a + b, 0) / valores.length),
+          type: "line",
+          borderColor: "rgba(255, 99, 132, 1)",
+          borderWidth: 3,
+          tension: 0.3,
+          pointRadius: 0,
+          hitRadius: 25,
+          hoverRadius: 25
         }
       ]
     },
@@ -83,7 +94,7 @@ async function loadDashboard() {
 
 window.addEventListener("DOMContentLoaded", loadDashboard);
 
-// ---------------- REGISTRAR CLIENTE ----------------
+
 document.getElementById("clienteForm")?.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -104,7 +115,7 @@ document.getElementById("clienteForm")?.addEventListener("submit", async (e) => 
   alert("Cliente registrado con éxito");
 });
 
-// ---------------- REGISTRAR PRODUCTO ----------------
+
 document.getElementById("productoForm")?.addEventListener("submit", async (e) => {
   e.preventDefault();
 
