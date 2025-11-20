@@ -7,7 +7,9 @@
 		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	</head>
 	<body>
-		<h1>TRABAJO PRACTICO - ESTADISTICA</h1>
+		<h1 id="tituloPrincipal" style="cursor: pointer">
+			TRABAJO PRACTICO - ESTADISTICA
+		</h1>
 		<nav class="menu">
 			<button id="menuCliente">Cargar Cliente</button>
 			<button id="menuProducto">Cargar Producto</button>
@@ -148,6 +150,8 @@
 				document.getElementById("formProducto").style.display = "none";
 				document.getElementById("formVenta").style.display = "block";
 			};
+			document.getElementById("tituloPrincipal").onclick = () =>
+				location.reload();
 		</script>
 	</body>
 </html>
