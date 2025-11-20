@@ -201,12 +201,10 @@ Valores cercanos a:
 
 ### **Tiempo de dedicación**
 
-| Integrante | Tareas | Tiempo estimado |
-
-| Rafael Vales | Backend + Frontend + DB + Estadísticas | 34% del proyecto |
-
-| Matias Mestre | Backend + Frontend + DB + Estadísticas | 33% del proyecto |
-
+| Integrante        | Tareas                                 | Tiempo estimado  |
+| ----------------- | -------------------------------------- | ---------------- |
+| Rafael Vales      | Backend + Frontend + DB + Estadísticas | 34% del proyecto |
+| Matias Mestre     | Backend + Frontend + DB + Estadísticas | 33% del proyecto |
 | Mariano Scarcella | Backend + Frontend + DB + Estadísticas | 33% del proyecto |
 
 ---
